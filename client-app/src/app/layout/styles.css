@@ -45,4 +45,8 @@ body {
   width: 100%;
 }
 
+.ui.grid>.column:not(.row) {
+  width: 35%;
+}
+
 /*end home page styles*/
