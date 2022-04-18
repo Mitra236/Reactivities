@@ -23,7 +23,6 @@ namespace Application.Comments
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-
             public Handler(DataContext context, IMapper mapper)
             {
                 _mapper = mapper;
@@ -33,10 +32,10 @@ namespace Application.Comments
             public async Task<Result<List<CommentDTO>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var comments = await _context.Comments
-                                .Where(x => x.Activity.Id == request.ActivityId)
-                                .OrderBy(x => x.CreateAt)
-                                .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
-                                .ToListAsync();
+                    .Where(x => x.Activity.Id == request.ActivityId)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
 
                 return Result<List<CommentDTO>>.Success(comments);
             }
