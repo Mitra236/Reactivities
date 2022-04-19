@@ -19,7 +19,7 @@ namespace Application.Activities
     {
         public class Query : IRequest<Result<PagedList<ActivityDTO>>> 
         { 
-            public PagingParams Params { get; set; }
+            public ActivityParams Params { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, Result<PagedList<ActivityDTO>>>
@@ -48,10 +48,21 @@ namespace Application.Activities
                 //AutoMapper Projection
                 //asqueryable is not async - deffered execution
                 var query =  _context.Activities
+                                .Where(d => d.Date >= request.Params.StartDate)
                                 .OrderBy(d => d.Date)
                                 .ProjectTo<ActivityDTO>(_mapper.ConfigurationProvider,
                                     new {currentUsername = _userAccessor.GetUsername()})
                                 .AsQueryable();
+
+                if (request.Params.IsGoing && !request.Params.IsHost)
+                {
+                    query = query.Where(x => x.Atendees.Any(a => a.Username == _userAccessor.GetUsername()));
+                }
+
+                if (request.Params.IsHost && !request.Params.IsGoing)
+                {
+                    query = query.Where(x => x.HostUsername == _userAccessor.GetUsername());
+                }
 
                 return Result<PagedList<ActivityDTO>>.Success(
                     await PagedList<ActivityDTO>.CreateAsync(query, request.Params.PageNumber, request.Params.PageSize)
