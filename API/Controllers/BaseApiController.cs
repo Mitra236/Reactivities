@@ -28,7 +28,7 @@ namespace API.Controllers
             return BadRequest(result.Error);
         }
 
-        protected ActionResult HandlePagedResut<T>(Result<PagedList<T>> result)
+        protected ActionResult HandlePagedResult<T>(Result<PagedList<T>> result)
         {
             if (result == null) return NotFound();
             
