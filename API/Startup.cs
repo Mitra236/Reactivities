@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 using Persistence;
 
@@ -67,6 +68,15 @@ namespace API
                 .FrameAncestors(s => s.Self())
                 .ImageSources(s => s.Self().CustomSources("res.cloudinary.com"))
                 .ScriptSources(s => s.Self().CustomSources("sha256-Tb8OSe1AjOh69ILtODKm7nA8FSS8D+lyt9eq4jItLGs=")));
+            app.Use(async (context, next) => 
+                {
+                    context.Response.Headers.Add("Permissions-Policy", new StringValues(
+                                                                                    "microphone=(), " +
+                                                                                    "payment=(), " +
+                                                                                    "sync-xhr=(self)"
+                                                                                    ));
+                    await next.Invoke();
+                });
 
             if (env.IsDevelopment())
             {
@@ -77,7 +87,7 @@ namespace API
             {
                 app.Use(async (context, next) => 
                 {
-                    context.Response.Headers.Add("Stricti-Transport-Security", "max-age=31536000");
+                    context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000");
                     await next.Invoke();
                 });
             }
