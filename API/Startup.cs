@@ -62,12 +62,15 @@ namespace API
             app.UseXfo(opt => opt.Deny());
             app.UseCsp(opt => opt
                 .BlockAllMixedContent()
-                .StyleSources(s => s.Self().CustomSources("fonts.googleapis.com"))
+                .StyleSources(s => s.Self()
+                    .CustomSources("fonts.googleapis.com", "sha256-yChqzBduCCi4o4xdbXRXh4U/t1rP4UUUMJt+rB+ylUI="))
                 .FontSources(s => s.Self().CustomSources("fonts.gstatic.com", "data:"))
                 .FormActions(s => s.Self())
                 .FrameAncestors(s => s.Self())
-                .ImageSources(s => s.Self().CustomSources("res.cloudinary.com"))
-                .ScriptSources(s => s.Self().CustomSources("sha256-Tb8OSe1AjOh69ILtODKm7nA8FSS8D+lyt9eq4jItLGs=")));
+                .ImageSources(s => s.Self().CustomSources("res.cloudinary.com", "data:", "www.facebook.com", "z-p3-scontent.fbeg7-2.fna.fbcdn.net"))
+                .ScriptSources(s => s.Self()
+                    .CustomSources("sha256-Tb8OSe1AjOh69ILtODKm7nA8FSS8D+lyt9eq4jItLGs=", 
+                        "connect.facebook.net", "sha256-P/zfH4xSdYsd4Wwul8NqY2Z1n4DsygPf3gb/wWs+2es=")));
             app.Use(async (context, next) => 
                 {
                     context.Response.Headers.Add("Permissions-Policy", new StringValues(
